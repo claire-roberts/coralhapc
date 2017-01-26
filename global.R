@@ -171,3 +171,5 @@ cpaVK826 <- subset(cpa, cpa$Name=="Viosca Knoll 826")
 ## Experimental
  # bathy <- raster("bathy.tif")
 
+###Add nautical chart
+nautical <- "https://api.mapbox.com/styles/v1/auburngrad2015/ciyeolf2s001f2srz683ssr6e/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYXVidXJuZ3JhZDIwMTUiLCJhIjoiY2l5ZWhvaHplMDB3MjJxbXA1MHF5czR0biJ9.rEHf8qpxUi9Uv0rjMO0fEg"

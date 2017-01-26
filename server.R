@@ -15,10 +15,13 @@ server <- function(input, output, session) {
                options = providerTileOptions(noWrap = TRUE),group="Labels") %>%
 #       addTiles('http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}',
 #                options = providerTileOptions(noWrap = TRUE),group="Oceans") %>%
-      setView(-90.2, 27.75, zoom = 6) %>% 
+      setView(-90.2, 27.75, zoom = 7) %>% 
+      addTiles(nautical, tileOptions(minZoom=6), group="Nautical Chart") %>% 
 
-  addPolygons(data=HAPCwRegs, fillOpacity=0.75, stroke=FALSE, 
+  addPolygons(data=HAPCwRegs, fillOpacity=0, stroke=TRUE, 
               fillColor="#1b9e77", #teal
+              color="#1b9e77", #teal
+              weight=4,
               popup= ~ paste(Name, round(st_area_sh,1), "sq. miles"),
               group="HAPCs with fishing restrictions") %>% 
 
@@ -28,150 +31,156 @@ server <- function(input, output, session) {
  #            group="Recommended HAPCs") %>% 
      ## These polygons not included in area calculations
      
-     addPolygons(data=HAPCnoregs, fillOpacity=0.5, stroke=FALSE, 
-                 fillColor='#d95f02', #orange
+     addPolygons(data=HAPCnoregs, fillOpacity=0, stroke=TRUE, 
+                 fillColor='#d95f02',
+                 color='#d95f02',
+                 weight=4,
                  popup= ~ paste(NAME, "No HAPC specific fishing regulations"),
                  group="HAPCs without fishing restrictions")  %>% 
-      addPolygons(data=cpa, fillOpacity=0.5, stroke=FALSE, 
+      addPolygons(data=cpa, fillOpacity=0, stroke=TRUE,
                   fillColor='#7570b3', #purple
+                  color='#7570b3',
+                  weight=3,
                   #popup= ~ paste(Feature, "; Depth range:", depth__m_, " (m)"  ),
                   popup = popupTable(cpa, zcol=c("Name", "Depth", "Area")),
                   group="Recommended (Updated Sept. 2016)")  %>%
-      
-      addPolygons(data=cpaVK906, fillOpacity=0.5, stroke=TRUE,
-                  color = "#888888",
-                  #weight=0.5,
+
+      addPolygons(data=cpaVK906, fillOpacity=0, stroke=TRUE,
+                  #color = "#888888",
+                  color='#7570b3',
+                  weight=4,
                   fillColor='#7570b3', #purple
                   #popup= ~ paste(Feature, "; Depth range:", depth__m_, " (m)"  ),
                   popup =  mapview:::popupIframe("https://www.youtube.com/embed/VpKAOHQV2JE?autoplay=1", width = 300, height = 225),
                   group="Recommended (Updated Sept. 2016)")  %>%
-      # 
-      addPolygons(data=cpaVK826, fillOpacity=0.5, stroke=TRUE,
-                  color = "#888888",
-                  #weight=0.5,
+
+      addPolygons(data=cpaVK826, fillOpacity=0, stroke=TRUE,
+                  #color = "#888888",
+                  color='#7570b3',
+                  weight=4,
                   fillColor='#7570b3', #purple
                   #popup= ~ paste(Feature, "; Depth range:", depth__m_, " (m)"  ),
                   #popup =  mapview:::popupIframe("https://youtu.be/CoNcX8HT6r8", width = 300, height = 225),
                   popup =  mapview:::popupIframe("https://www.youtube.com/embed/CoNcX8HT6r8?autoplay=1", width = 300, height = 225),
                   group="Recommended (Updated Sept. 2016)")  %>%
 
-   ##Add polyline: 
-   addPolylines(data=depth50m, color = "#888888", weight = 3, group="50 m contour") #%>%
-   
-   #addMeasure(position=c("bottomleft"), primaryLengthUnit="miles",
- #primaryAreaUnit="sqmiles")%>%
-   #addScaleBar(position=c("bottomright")) #%>%
-   #addMouseCoordinates2() %>% 
-  
-  
-  
+   ##Add polyline:
+   addPolylines(data=depth50m, color = "#888888", weight = 4, group="50 m contour") %>%
+ #   
+  addMeasure(position=c("bottomleft"), primaryLengthUnit="miles",primaryAreaUnit="sqmiles") %>%
+  addScaleBar(position=c("bottomright")) %>%
+  #addMouseCoordinates2() # %>% 
+ #  
+ #  
+ #  
   ##New for version 0.20 Coral Mapper
   addCircleMarkers(data=BlackCoral,
-                   # addCircleMarkers(data=BlackCoral[ which(BlackCoral$depth>-200), ],            
-                   #addCircleMarkers(data=BlackCoral[which(BlackCoral$depth>=input$integer[1] & BlackCoral$depth<=input$integer[2])]),  
-                   #addCircleMarkers(data=(BlackCoral[which(BlackCoral$depth>=input$integer[1]),]),     
-                   radius = ~3, 
+                   # addCircleMarkers(data=BlackCoral[ which(BlackCoral$depth>-200), ],
+                   #addCircleMarkers(data=BlackCoral[which(BlackCoral$depth>=input$integer[1] & BlackCoral$depth<=input$integer[2])]),
+                   #addCircleMarkers(data=(BlackCoral[which(BlackCoral$depth>=input$integer[1]),]),
+                   radius = ~3,
                    #color="FFFF00",
                    fillColor = "#a6d854",
-                   #stroke = FALSE, fillOpacity = 0.8, 
+                   #stroke = FALSE, fillOpacity = 0.8,
                    stroke = TRUE, fillOpacity = 0.8, color="gray", weight=1,
-                   group="Coral locations", 
-                   popup = ~paste(" <b>Depth (m): </b>",  Depth, "<br/>",
-                                  "<b>Common name: </b>", Name, sep = " ")) %>% 
-  ##New for version 0.20 Coral Mapper
-  addCircleMarkers(data=Octocoral, 
-                   radius = ~3, 
-                   #color="FFFF00",
-                   fillColor = "#66c2a5",
-                   #stroke = FALSE, fillOpacity = 0.8, 
-                   stroke = TRUE, fillOpacity = 0.8, color="gray", weight=1,
-                   #group="<em>Stony Coral</em>", 
-                   group= "Coral locations",
-                   
+                   group="Coral locations",
                    popup = ~paste(" <b>Depth (m): </b>",  Depth, "<br/>",
                                   "<b>Common name: </b>", Name, sep = " ")) %>%
-  
-  
   ##New for version 0.20 Coral Mapper
+  addCircleMarkers(data=Octocoral,
+                   radius = ~3,
+                   #color="FFFF00",
+                   fillColor = "#66c2a5",
+                   #stroke = FALSE, fillOpacity = 0.8,
+                   stroke = TRUE, fillOpacity = 0.8, color="gray", weight=1,
+                   #group="<em>Stony Coral</em>",
+                   group= "Coral locations",
+
+                   popup = ~paste(" <b>Depth (m): </b>",  Depth, "<br/>",
+                                  "<b>Common name: </b>", Name, sep = " ")) %>%
+ #  
+ #  
+ #  ##New for version 0.20 Coral Mapper
   addCircleMarkers(data=Seapen,
-                   radius = ~3, 
+                   radius = ~3,
                    #color="FFFF00",
                    fillColor = "#fc8d62",
-                   #stroke = FALSE, fillOpacity = 0.8, 
+                   #stroke = FALSE, fillOpacity = 0.8,
                    stroke = TRUE, fillOpacity = 0.8, color="gray", weight=1,
-                   group="Coral locations", 
+                   group="Coral locations",
                    popup = ~paste(" <b>Depth (m): </b>",  Depth, "<br/>",
-                                  "<b>Common name: </b>", Name, sep = " ")) %>% 
+                                  "<b>Common name: </b>", Name, sep = " ")) %>%
   ##New for version 0.20 Coral Mapper
   addCircleMarkers(data=SoftCoral,
-                   radius = ~3, 
+                   radius = ~3,
                    #color="FFFF00",
                    fillColor = "#8da0cb",
-                   #stroke = FALSE, fillOpacity = 0.8, 
+                   #stroke = FALSE, fillOpacity = 0.8,
                    stroke = TRUE, fillOpacity = 0.8, color="gray", weight=1,
-                   group="Coral locations", 
+                   group="Coral locations",
                    popup = ~paste(" <b>Depth (m): </b>",  Depth, "<br/>",
                                   "<b>Common name: </b>", Name, sep = " ")) %>%
   ##New for version 0.20 Coral Mapper
   addCircleMarkers(data=Sponge,
-                   radius = ~3, 
+                   radius = ~3,
                    #color="FFFF00",
                    fillColor = "#ffd92f",
-                   #stroke = FALSE, fillOpacity = 0.8, 
+                   #stroke = FALSE, fillOpacity = 0.8,
                    stroke = TRUE, fillOpacity = 0.8, color="gray", weight=1,
-                   group="Coral locations", 
+                   group="Coral locations",
                    popup = ~paste(" <b>Depth (m): </b>",  Depth, "<br/>",
                                   "<b>Common name: </b>", Name, sep = " ")) %>%
-  
-  
-  
-  
+
+
+
+
   ##New for version 0.20 Coral Mapper
-  addCircleMarkers(data=StonyCoral, 
-                   radius = ~3, 
+  addCircleMarkers(data=StonyCoral,
+                   radius = ~3,
                    #color="FFFF00",
                    fillColor = "#e78ac3",
-                   #stroke = FALSE, fillOpacity = 0.8, 
+                   #stroke = FALSE, fillOpacity = 0.8,
                    stroke = TRUE, fillOpacity = 0.8, color="gray", weight=1,
-                   #group="<em>Stony Coral</em>", 
+                   #group="<em>Stony Coral</em>",
                    group= "Coral locations",
-                   
+
                    popup = ~paste(" <b>Depth (m): </b>",  Depth, "<br/>",
                                   "<b>Common name: </b>", Name, sep = " ")) %>%
+    
+ #  
+  # addControl(  html='
+  #          <!--Example adding point, line and polygon to create a custom legend-->
+  #           <!--This needs to be HTML-->
+  # 
+  # 
+  #              <table><tr><td class="shape"><svg width="24" height="18">
+  #              <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#a6d854" /></svg></td><td class="value">Black Coral</td></tr></table>
+  #              <table><tr><td class="shape"><svg width="24" height="18">
+  #              <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#66c2a5" /></svg></td><td class="value">Octocoral</td></tr></table>
+  # 
+  #              <table><tr><td class="shape"><svg width="24" height="18">
+  #              <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#fc8d62" /></svg></td><td class="value">Sea Pen</td></tr></table>
+  # 
+  #              <table><tr><td class="shape"><svg width="24" height="18">
+  #              <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#8da0cb" /></svg></td><td class="value">Soft Coral</td></tr></table>
+  # 
+  #              <table><tr><td class="shape"><svg width="24" height="18">
+  #              <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#ffd92f" /></svg></td><td class="value">Sponge</td></tr></table>
+  # 
+  #              <table><tr><td class="shape"><svg width="24" height="18">
+  #              <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#e78ac3" /></svg></td><td class="value">Stony Coral</td></tr></table>
+  # 
+  #              <table><tr><td class="shape"><svg style="width:24px; height:18px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><line class="ln" style="stroke: #888888; stroke-opacity: 0.8; stroke-width: 3;" x1="2.5" y1="9" x2="21.5" y2="9" /></svg></td><td class="value">50 m contour</td></tr></table>'
+  # 
+  # 
+  # 
+  #               ## End HTML
+  #           , position= c("bottomleft"), className = "info legend", data = getMapData(map)
+  # 
+  # 
+  #           ) #%>%
   
-  addControl(  html='
-           <!--Example adding point, line and polygon to create a custom legend-->
-            <!--This needs to be HTML--> 
-               
-               
-               <table><tr><td class="shape"><svg width="24" height="18">             
-               <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#a6d854" /></svg></td><td class="value">Black Coral</td></tr></table>       
-               <table><tr><td class="shape"><svg width="24" height="18">
-               <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#66c2a5" /></svg></td><td class="value">Octocoral</td></tr></table>
-               
-               <table><tr><td class="shape"><svg width="24" height="18">
-               <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#fc8d62" /></svg></td><td class="value">Sea Pen</td></tr></table>
-               
-               <table><tr><td class="shape"><svg width="24" height="18">
-               <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#8da0cb" /></svg></td><td class="value">Soft Coral</td></tr></table>
-               
-               <table><tr><td class="shape"><svg width="24" height="18">
-               <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#ffd92f" /></svg></td><td class="value">Sponge</td></tr></table>
-               
-               <table><tr><td class="shape"><svg width="24" height="18">
-               <circle cx="5" cy="5" r="4" stroke="#888888" stroke-width="1.5" fill="#e78ac3" /></svg></td><td class="value">Stony Coral</td></tr></table>
-               
-               <table><tr><td class="shape"><svg style="width:24px; height:18px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><line class="ln" style="stroke: #888888; stroke-opacity: 0.8; stroke-width: 3;" x1="2.5" y1="9" x2="21.5" y2="9" /></svg></td><td class="value">50 m contour</td></tr></table>'
-             
-            
-         
-                ## End HTML
-            , position= c("bottomleft"), className = "info legend", data = getMapData(map)
-            
-            
-            ) %>%
-  
-  ### Add a legend.
+## Add a legend.
   addLegend("bottomright", colors = c('#1b9e77',  '#d95f02', '#7570b3'),
             labels = c("HAPCs with fishing restrictions",  "HAPCs without fishing restrictions","Recommended (Updated Sept. 2016)"),
             title = "Legend (HAPCs)",
@@ -182,15 +191,15 @@ server <- function(input, output, session) {
 # Layers control
 addLayersControl(
   #baseGroups = c("World Imagery", "Labels", "Oceans"),
-  overlayGroups = c("HAPCs with fishing restrictions",  
+  overlayGroups = c( "Nautical Chart", "HAPCs with fishing restrictions",
                     "HAPCs without fishing restrictions", "Coral locations", "Recommended (Updated Sept. 2016)"),
   position=c("bottomleft"),
   options = layersControlOptions(collapsed = FALSE)
                 ) %>%
-  
+#   
 
-  hideGroup("Coral locations")%>% 
-  hideGroup("HAPCs without fishing restrictions") #%>% 
+  hideGroup("Coral locations")%>%
+  hideGroup("HAPCs without fishing restrictions") #%>%
 # hideGroup("Oceans")
 
     })

@@ -46,19 +46,19 @@ ui <- dashboardPage(skin="black",
 #                            #style = "background-color: #F0F0F0;",
 #                            style= "font-family: 'Lobster', cursive",
 #                            style = "color: #708090;",
-                           leafletOutput("map", height=725),
+                           leafletOutput("map", height=725)#,
                            #h4("Click on map to display coordinates")#,
                            #verbatimTextOutput("out"),
                            #verbatimTextOutput("out2"),
                            ##add absolute panel
-                           absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                         draggable = TRUE, top = 170, left = "auto", right = 20, bottom = "auto",
-                                         # width = 330, height = "auto",
-                                         width = 350, height = "auto",
-                                         plotOutput("HAPCarea", height = 250),
-                                         div(h5("*Dashed line (---) indicates total area of current and recommended HAPCs in the Gulf of Mexico"), align="center")
-                                        
-                           )#,
+                           # absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+                           #               draggable = TRUE, top = 170, left = "auto", right = 20, bottom = "auto",
+                           #               # width = 330, height = "auto",
+                           #               width = 350, height = "auto",
+                           #               plotOutput("HAPCarea", height = 250),
+                           #               div(h5("*Dashed line (---) indicates total area of current and recommended HAPCs in the Gulf of Mexico"), align="center")
+                           #              
+                           # )#,
                            #exp
 #                            absolutePanel(top = 150, right = 10, draggable=TRUE,
 #                                         
